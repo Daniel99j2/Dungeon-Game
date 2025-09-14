@@ -1,0 +1,33 @@
+{
+  "collisions": [
+    {
+      "type": "box",
+      "start": [1, 2, 3],
+      "end": [4, 5, 6],
+      "scale": [1, 2, 3],
+      "rotation": [0, 0, 0]
+    },
+    {
+      "type": "sphere",
+      "pos": [1, 2, 3],
+      "radius": 1,
+      "scale": [1, 2, 3],
+      "rotation": [0, 0, 0]
+    },
+    {
+      "type": "triangleee",
+      "vertex1": [1, 2, 3],
+      "vertex2": [4, 5, 6],
+      "vertex3": [7, 8, 9],
+      "scale": [1, 2, 3],
+      "rotation": [0, 0, 0]
+    },
+    {
+      "type": "box",
+      "start": [-10, -10, -10],
+      "end": [10, 10, 10],
+      "scale": [1, 1, 1],
+      "rotation": [0, 0, 0]
+    }
+  ]
+}

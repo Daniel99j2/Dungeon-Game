@@ -1,0 +1,2 @@
+Brushes:
+ - 15px for outlines
