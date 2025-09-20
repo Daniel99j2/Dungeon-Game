@@ -22,5 +22,4 @@ private:
     int currentId = 0;
 
     void simulatePhysics(float deltaTime);
-    void handleCollisions() const;
 };

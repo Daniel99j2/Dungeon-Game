@@ -105,6 +105,7 @@ public:
         ImGui::End();
     }
 
+    //from now on i have no clue :(
 private:
     std::vector<std::string> logLines;
     std::vector<bool> logIsError;

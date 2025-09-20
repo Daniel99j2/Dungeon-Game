@@ -26,29 +26,14 @@ using namespace std;
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
-void mouse_callback(GLFWwindow *window, double xpos, double ypos);
-
 void renderQuad();
 
 unsigned int postFBO = 0;
 unsigned int colorBuffer = 0;
 unsigned int rboDepth = 0;
-
 int stride = 8;
 std::map<std::string, std::string> args;
 std::chrono::high_resolution_clock::time_point lastFrameTime;
-
-struct Light {
-	glm::vec3 position;
-	float constant;
-	float linear;
-	float quadratic;
-	glm::vec3 ambient;
-	glm::vec3 diffuse;
-	glm::vec3 specular;
-};
-
-std::vector<Light> lights;
 
 int main(int argc, char *argv[]) {
 	Logger logger;
@@ -89,7 +74,6 @@ int main(int argc, char *argv[]) {
 	}
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	glfwSetCursorPosCallback(window, mouse_callback);
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -155,60 +139,12 @@ int main(int argc, char *argv[]) {
 
 		Profiler::beginFrame();
 
-		Profiler::beginSection("ImGui");
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-
-		ImGui::ShowDemoWindow();
-
-		ImGui::Begin("Inventory");
-		ImGui::Text("You have %d apples", 5);
-		ImGui::End();
-
-		ImGui::Begin("Debug options");
-		ImGui::SeparatorText("Game");
-		ImGui::Checkbox("Wireframe", &GameConstants::wireframe);
-		ImGui::Checkbox("Show AABB's", &GameConstants::debugCollision);
-		ImGui::Checkbox("Post-Processing", &GameConstants::postProcessingEnabled);
-		const char* debugRenderModes[] = {"Default", "Simple", "Normal", "Metal", "Rough", "Emissive", "TexCoords"};
-		ImGui::ListBox("Debug render mode", &GameConstants::debugRenderMode, debugRenderModes, IM_ARRAYSIZE(debugRenderModes));
-		ImGui::InputInt("FPS", &GameConstants::targetFPS);
-
-		ImGui::SeparatorText("Player");
-		if (ImGui::Button("Launch"))
-			for (const auto &object: GameConstants::world.getObjects()) {
-				object->velocity = glm::vec3(5, 5, 5);
-			};
-		ImGui::End();
-
-		ImGui::Begin("Profiler");
-		ImGui::PlotLines("FPS", Profiler::fpsHistory, 100, 0, nullptr, 0.0f, 120, ImVec2(0, 80));
-
-		for (const auto &[name, res]: oldProfilerResults) {
-			ImGui::Text("%s: %.3f s (%.3f ms avg, %d calls)", name.c_str(),
-			            res.totalTime / 1000.0f,
-			            res.totalTime / res.callCount,
-			            res.callCount);
-		}
-		ImGui::End();
-		Profiler::endSection("ImGui");
-
-		static WorldGameObjectsEditor gameObjectsEditor;
-		gameObjectsEditor.draw();
-
-		logger.render();
-
 		if (GameConstants::wireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 
 		Profiler::beginSection("Input");
 		for (auto &k: GameConstants::keybindsManager.keybinds) k->update(window);
-		glfwSetInputMode(window, GLFW_CURSOR,
-		                 !GameConstants::keybindsManager.TOGGLE_CURSOR->isPressed() && !GameConstants::debugging
-			                 ? GLFW_CURSOR_DISABLED
-			                 : GLFW_CURSOR_NORMAL);
 		Profiler::endSection("Input");
 
 		Profiler::beginSection("World Tick");
@@ -218,13 +154,16 @@ int main(int argc, char *argv[]) {
 		auto model = glm::mat4(1.0f);
 		auto view = glm::mat4(1.0f);
 
-		glm::mat4 projection;
 		//dont divide by 0
 		int fbWidth, fbHeight;
 		glfwGetFramebufferSize(GameConstants::window, &fbWidth, &fbHeight);
 		float aspect = (fbHeight > 0) ? (float) fbWidth / fbHeight : 4.0f / 3.0f;
 
-		projection = glm::ortho(0.0f, (float)fbWidth, 0.0f, (float)fbHeight, -1.0f, 1.0f);
+		glm::mat4 projection = glm::ortho(
+			0.0f, (float) fbWidth,
+			0.0f, (float) fbHeight,
+			-1.0f, 1.0f
+		);;
 
 		glEnable(GL_DEPTH_TEST);
 
@@ -238,14 +177,55 @@ int main(int argc, char *argv[]) {
 
 		//disables gamma correction, so colours aren't washed out
 		if (GameConstants::debugging) {
+			Profiler::beginSection("ImGui");
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
+
+			ImGui::ShowDemoWindow();
+
+			ImGui::Begin("Inventory");
+			ImGui::Text("You have %d apples", 5);
+			ImGui::End();
+
+			logger.render();
+
+			static WorldGameObjectsEditor gameObjectsEditor;
+			gameObjectsEditor.draw();
+
+			ImGui::Begin("Debug options");
+			ImGui::SeparatorText("Game");
+			ImGui::Checkbox("Wireframe", &GameConstants::wireframe);
+			ImGui::Checkbox("Show AABB's", &GameConstants::debugCollision);
+			ImGui::Checkbox("Post-Processing", &GameConstants::postProcessingEnabled);
+			const char* debugRenderModes[] = {"Default", "Simple", "Normal", "Metal", "Rough", "Emissive", "TexCoords"};
+			ImGui::ListBox("Debug render mode", &GameConstants::debugRenderMode, debugRenderModes, IM_ARRAYSIZE(debugRenderModes));
+
+			ImGui::SeparatorText("Player");
+			if (ImGui::Button("Launch"))
+				for (const auto &object: GameConstants::world.getObjects()) {
+					object->velocity = glm::vec3(5, 5, 5);
+				};
+			ImGui::End();
+
+			ImGui::Begin("Profiler");
+			ImGui::PlotLines("FPS", Profiler::fpsHistory, 100, 0, nullptr, 0.0f, 120, ImVec2(0, 80));
+
+			for (const auto &[name, res]: oldProfilerResults) {
+				ImGui::Text("%s: %.3f s (%.3f ms avg, %d calls)", name.c_str(),
+							res.totalTime / 1000.0f,
+							res.totalTime / res.callCount,
+							res.callCount);
+			}
+			ImGui::End();
+			Profiler::endSection("ImGui");
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+			ImGui::EndFrame();
 		}
 
 
 		Profiler::endSection("Main");
-
-		ImGui::EndFrame();
 
 		Profiler::beginSection("GLFW Render");
 		glfwSwapBuffers(window);
@@ -254,16 +234,6 @@ int main(int argc, char *argv[]) {
 
 		string title = ("Dungeon Game!!!");
 		glfwSetWindowTitle(window, title.c_str());
-
-		Profiler::beginSection("Sleep");
-		float targetFrameTime = 1.0f / GameConstants::targetFPS;
-		auto sleepDuration = targetFrameTime - deltaTime;
-		if (sleepDuration > 0.002f) {
-			std::this_thread::sleep_for(std::chrono::duration_cast<std::chrono::milliseconds>(
-				std::chrono::duration<float>(sleepDuration)
-			));
-		}
-		Profiler::endSection("Sleep");
 
 		Profiler::endFrame();
 	}
@@ -295,27 +265,4 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
-	if (!GameConstants::keybindsManager.TOGGLE_CURSOR->isPressed() && !GameConstants::debugging) {
-		int windowX;
-		int windowY;
-		float maxSensitivity = 50.0f;
-		float sensitivity = 50.0f;
-		glfwGetWindowPos(window, &windowX, &windowY);
-
-		// //we dont wan NaN from /0
-		// GameConstants::player->yaw -= (xpos - (windowX + GameConstants::window_width / 2)) / max(
-		// 			maxSensitivity - sensitivity, 1.0f) /
-		// 		20;
-		// GameConstants::player->pitch -= (ypos - (windowY + GameConstants::window_height / 2)) / max(
-		// 			maxSensitivity - sensitivity, 1.0f)
-		// 		/ 20;
-		//
-		// GameConstants::player->yaw = glm::mod(GameConstants::player->yaw, 360.0f);
-		// GameConstants::player->pitch = glm::clamp(GameConstants::player->pitch, -89.0f, 89.0f);
-
-		glfwSetCursorPos(window, windowX + GameConstants::window_width / 2, windowY + GameConstants::window_height / 2);
-	}
 }

@@ -18,18 +18,15 @@ struct Collision {
 
 class GameObject {
 public:
-    glm::vec3 position;
-    glm::vec3 velocity = glm::vec3(0);
+    glm::vec2 position;
+    glm::vec2 velocity = glm::vec2(0);
     std::string type;
-    glm::mat4 transform = glm::mat4(1.0f);
     int id = -1;
     std::vector<Collision> collisions;
 
     void applySlowdown(float drag);
 
     void update(float dt);
-
-    static void renderBoundingBox();
 
     virtual void draw(glm::mat4 projection);
     void baseTick();

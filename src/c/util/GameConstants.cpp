@@ -13,7 +13,6 @@ bool GameConstants::debugging = false;
 int GameConstants::debugRenderMode = 0;
 bool GameConstants::debugCollision = false;
 bool GameConstants::postProcessingEnabled = true;
-int GameConstants::targetFPS = 60;
 int GameConstants::window_height = 720;
 int GameConstants::window_width = 1280;
 GLFWwindow* GameConstants::window;

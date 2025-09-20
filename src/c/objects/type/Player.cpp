@@ -17,7 +17,7 @@ void Player::tick() {
 }
 
 void Player::move(bool w, bool a, bool s, bool d) {
-    float speed = 0.1f;
+    float speed = 0.4f;
     if (w) position.y += speed;
     if (s) position.y -= speed;
     if (a) position.x -= speed;
@@ -56,7 +56,10 @@ void Player::draw(glm::mat4 projection) {
     GameConstants::backgroundShader.use();
     GameConstants::backgroundShader.setMat4("projection", projection);
     GameConstants::backgroundShader.setMat4("view", glm::mat4(1));
-    GameConstants::backgroundShader.setMat4("model", glm::mat4(1));
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(position.x, position.y, 0.0f));
+    model = glm::scale(model, glm::vec3(RenderUtil::getAtlasByName("ui")->width, RenderUtil::getAtlasByName("ui")->height, 1.0f));
+    GameConstants::backgroundShader.setMat4("model", model);
     GameConstants::backgroundShader.setInt("tex", 0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, RenderUtil::getAtlasByName("ui")->id);

@@ -102,7 +102,7 @@ public:
                                                                       nullptr,
                                                                       windowPosX, windowPosY,
                                                                       windowedWidth, windowedHeight,
-                                                                      GameConstants::targetFPS
+                                                                      GLFW_DONT_CARE
                                                                   );
 
                                                                   GameConstants::window_width = windowedWidth;

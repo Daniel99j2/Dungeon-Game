@@ -21,7 +21,6 @@ public:
     static int debugRenderMode;
     static bool debugCollision;
     static bool postProcessingEnabled;
-    static int targetFPS;
     static int window_width;
     static int window_height;
     static bool fullscreen;
