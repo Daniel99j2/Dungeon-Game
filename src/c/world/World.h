@@ -7,7 +7,7 @@
 
 class World {
 public:
-    void drawWorld(float deltaTime) const;
+    void drawWorld(glm::mat4 projection) const;
 
     void tick(float deltaTime);
 

@@ -28,24 +28,16 @@ add_executable(
         src/c/util/GenericUtil.cpp
         src/c/util/GenericUtil.h
         libs/json.hpp
-        src/c/util/model/ModelLoader.cpp
-        src/c/util/model/ModelLoader.h
-        src/c/util/model/Mesh.h
         src/c/objects/GameObject.cpp
         src/c/objects/GameObject.h
-        src/c/objects/LivingObject.cpp
-        src/c/objects/LivingObject.h
         src/c/objects/type/Player.cpp
         src/c/objects/type/Player.h
         src/c/world/World.cpp
         src/c/world/World.h
         src/c/util/GameConstants.h
         src/c/util/GameConstants.cpp
-        src/c/objects/type/SimpleObject.cpp
-        src/c/objects/type/SimpleObject.h
-        src/c/util/model/Animation.h
-        src/c/util/model/AnimatorInstance.cpp
-        src/c/util/model/AnimatorInstance.h
+        src/c/objects/type/MapPartObject.cpp
+        src/c/objects/type/MapPartObject.h
         src/c/misc/Keybind.h
         src/c/util/Keybinds.h
         src/c/misc/Keybind.cpp
@@ -61,11 +53,12 @@ add_executable(
         src/c/util/Profiler.h
         src/c/util/Logger.h
         src/c/util/Profiler.cpp
-        src/c/util/model/Material.h
         src/c/ui/WorldEditorGui.h
         src/c/world/CollisionUtil.h
         src/c/world/CollisionLoader.cpp
         src/c/world/CollisionLoader.h
+        src/c/misc/Config.h
+        src/c/misc/Config.cpp
 )
 
 include_directories(

@@ -37,9 +37,9 @@ static GridCoord toGrid(const glm::vec3 &pos) {
 	};
 }
 
-void World::drawWorld(float deltaTime) const {
+void World::drawWorld(glm::mat4 projection) const {
 	for (auto &object: gameObjects) {
-		object->draw(deltaTime);
+		object->draw(projection);
 	}
 }
 
@@ -79,16 +79,6 @@ void World::handleCollisions() const {
 
 	for (auto &obj: gameObjects)
 		spatial[toGrid(obj->position)].push_back(obj);
-
-	for (auto &[cell, objs]: spatial) {
-		for (shared_ptr<GameObject> &object: objs) {
-			if (!object->isStatic) {
-				object->velocity += glm::vec3(0.0f, -object->gravity, 0.0f);
-				for (int axis = 0; axis < 2; ++axis) {
-					object->position[axis] += object->velocity[axis];
-				}
-			}
-		}
 
 		// for (size_t j = i + 1; j < objs.size(); ++j) {
 		//     auto a = objs[i];
@@ -164,5 +154,4 @@ void World::handleCollisions() const {
 		//         }
 		//     }
 		// }
-	}
 }

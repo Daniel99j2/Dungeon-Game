@@ -3,12 +3,9 @@
 #include "util/GenericUtil.h"
 #include "util/Logger.h"
 #include "util/GameConstants.h"
-#include "util/model/Model.h"
-#include "util/model/ModelLoader.h"
 #include "util/model/Shader.h"
 #include "objects/GameObject.h"
 #include "objects/type/Player.h"
-#include "objects/type/SimpleObject.h"
 #include "misc/Keybind.h"
 #include "util/Keybinds.h"
 #include "util/Profiler.h"
@@ -20,6 +17,8 @@
 
 #include "ui/WorldEditorGui.h"
 #include "world/CollisionLoader.h"
+
+#include "misc/Config.h"
 
 //the bin folder contents needs to be copied!
 
@@ -69,6 +68,8 @@ int main(int argc, char *argv[]) {
 
 	GameConstants::debug = args.contains("debug");
 
+	Config::load();
+
 	if (!glfwInit()) {
 		return -1;
 	}
@@ -109,130 +110,24 @@ int main(int argc, char *argv[]) {
 	ImGui_ImplOpenGL3_Init("#version 330 core");
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 
-	float vertices[] = {
-		// positions          // normals           // texture coords
-		-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
-		0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
-		0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
-		-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
-
-		-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-		0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-		0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-		-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-		-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-
-		-0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-		-0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-		-0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-		-0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-
-		0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-		0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-		0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-		0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-		0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-
-		-0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
-		0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f,
-		0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-		0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-		-0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
-
-		-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-		0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-		0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-		-0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-		-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f
-	};
-
-	// for (int i = 0; i < 3; ++i) {
-	// 	glm::vec3 colour = glm::vec3(GenericUtil::randomFloat(0, 1, 2), GenericUtil::randomFloat(0, 1, 2),
-	// 	                             GenericUtil::randomFloat(0, 1, 2));
-	// 	lights.push_back(Light(
-	// 		glm::vec3(GenericUtil::randomInt(-15, 15), GenericUtil::randomInt(-15, 15),
-	// 		          GenericUtil::randomInt(-15, 15)),
-	// 		1, 0.09f, 0.032f,
-	// 		colour / 100.0f,
-	// 		colour,
-	// 		colour / 2.0f
-	// 	));
-	// }
-
-	unsigned int VBO, cubeVAO;
-	glGenVertexArrays(1, &cubeVAO);
-	glGenBuffers(1, &VBO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	glBindVertexArray(cubeVAO);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void *) 0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void *) (3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void *) (6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-
-	// second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
-	unsigned int lightCubeVAO;
-	glGenVertexArrays(1, &lightCubeVAO);
-	glBindVertexArray(lightCubeVAO);
-
-
-	//post-processing
-	glGenFramebuffers(1, &postFBO);
-	// create a floating point colour buffer
-	glGenTextures(1, &colorBuffer);
-	glBindTexture(GL_TEXTURE_2D, colorBuffer);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, GameConstants::window_width, GameConstants::window_height, 0, GL_RGBA,
-	             GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// create depth buffer (renderbuffer)
-	glGenRenderbuffers(1, &rboDepth);
-	glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, GameConstants::window_width,
-	                      GameConstants::window_height);
-	// attach buffers
-	glBindFramebuffer(GL_FRAMEBUFFER, postFBO);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		std::cerr << "[WARN] Framebuffer not complete!" << std::endl;
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 	GLFWimage *icon = RenderUtil::getImageData("src/resources/textures/ui/icon");
 	glfwSetWindowIcon(window, 1, icon);
 	stbi_image_free(icon->pixels);
 	delete icon;
 
-	GameConstants::defaultShader = Shader("default");
-	GameConstants::skyboxShader = Shader("skybox");
+	GameConstants::foregroundShader = Shader("foreground");
+	GameConstants::backgroundShader = Shader("background");
 	GameConstants::simpleShader = Shader("simple");
+	GameConstants::objectShader = Shader("object");
+	GameConstants::textShader = Shader("text");
+	GameConstants::uiShader = Shader("ui");
 	GameConstants::postProcessor = Shader("post");
 	GameConstants::postProcessor.use();
 	GameConstants::postProcessor.setInt("hdrBuffer", 0);
 
-	GameConstants::defaultShader.use();
-
-	//RenderUtil::genOrLoadAtlas(args.contains("regenAtlas") || args.contains("regenAll"));
 	RenderUtil::genOrLoadAtlas(true);
 
 	CollisionLoader::loadCollisionMaps();
-
-	ModelLoader::loadModels();
-
-	//Model* skybox = ModelLoader::getModel("skybox");
 
 	glm::vec3 lightPos(1.5f, 1.0f, -2.3f);
 
@@ -240,33 +135,11 @@ int main(int argc, char *argv[]) {
 	cout << "[INFO] [Game] Game took " << glfwGetTime() << " seconds to start!" << endl;
 
 	GameConstants::world = World();
-	GameConstants::player = std::make_shared<Player>(glm::vec3(5, 10, 0));;
+	GameConstants::player = std::make_shared<Player>(glm::vec3(0, 0, 0));;
 	GameConstants::world.addObject(std::static_pointer_cast<GameObject>(GameConstants::player));
-	GameConstants::player->gravity = 0;
-
-	auto g = std::make_shared<SimpleObject>(glm::vec3(0, 0, 0));
-	GameConstants::world.addObject(std::static_pointer_cast<GameObject>(g));
-	g->gravity = 0;
-
-	auto g1 = std::make_shared<SimpleObject>(glm::vec3(10, 2, 0));
-	GameConstants::world.addObject(std::static_pointer_cast<GameObject>(g1));
-	g1->gravity = 0;
-	g1->model = ModelLoader::getModel("blender");
-
-	auto g2 = std::make_shared<SimpleObject>(glm::vec3(5, 5, 5));
-	GameConstants::world.addObject(std::static_pointer_cast<GameObject>(g2));
-	g2->gravity = 0;
-	g2->model = ModelLoader::getModel("collision");
-
-	//g->animator.play(&g->model.animations[0]);
-	//g->animator.play(&g->model.animations[1]);
 
 	glDepthMask(GL_TRUE);
 	glEnable(GL_CULL_FACE);
-
-	//anti aliasing - stops the jagged edges
-	glfwWindowHint(GLFW_SAMPLES, 4);
-	glEnable(GL_MULTISAMPLE);
 
 	glfwSwapInterval(1);
 
@@ -336,18 +209,6 @@ int main(int argc, char *argv[]) {
 		                 !GameConstants::keybindsManager.TOGGLE_CURSOR->isPressed() && !GameConstants::debugging
 			                 ? GLFW_CURSOR_DISABLED
 			                 : GLFW_CURSOR_NORMAL);
-
-		glm::vec3 front;
-		front.x = cos(glm::radians(GameConstants::player->pitch)) * sin(glm::radians(GameConstants::player->yaw));
-		front.y = sin(glm::radians(GameConstants::player->pitch));
-		front.z = cos(glm::radians(GameConstants::player->pitch)) * cos(glm::radians(GameConstants::player->yaw));
-		front = glm::normalize(front);
-
-		glm::vec3 right = glm::normalize(glm::cross(front, glm::vec3(0, 1, 0)));
-		glm::vec3 up = glm::normalize(glm::cross(right, front));
-
-		glm::vec3 flatFront = glm::normalize(glm::vec3(front.x, 0.0f, front.z));
-		glm::vec3 flatRight = glm::normalize(glm::vec3(right.x, 0.0f, right.z));
 		Profiler::endSection("Input");
 
 		Profiler::beginSection("World Tick");
@@ -356,12 +217,6 @@ int main(int argc, char *argv[]) {
 
 		auto model = glm::mat4(1.0f);
 		auto view = glm::mat4(1.0f);
-		if (GameConstants::keybindsManager.TOGGLE_CAMERA->isPressed()) {
-			view = glm::lookAt(glm::vec3(8, 8, 8), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-		} else {
-			view = glm::lookAt(GameConstants::player->position + glm::vec3(0, 1.8, 0),
-			                   GameConstants::player->position + glm::vec3(0, 1.8, 0) + front, up);
-		}
 
 		glm::mat4 projection;
 		//dont divide by 0
@@ -369,116 +224,17 @@ int main(int argc, char *argv[]) {
 		glfwGetFramebufferSize(GameConstants::window, &fbWidth, &fbHeight);
 		float aspect = (fbHeight > 0) ? (float) fbWidth / fbHeight : 4.0f / 3.0f;
 
-		projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
+		projection = glm::ortho(0.0f, (float)fbWidth, 0.0f, (float)fbHeight, -1.0f, 1.0f);
 
 		glEnable(GL_DEPTH_TEST);
 
 		Profiler::beginSection("Main");
-
-		float gamma = 2.2f;
-		float exposure = 1.0f;
-
-		Profiler::beginSection("Lighting");
-		GameConstants::defaultShader.use();
-		GameConstants::defaultShader.setVec3("viewPos", GameConstants::keybindsManager.TOGGLE_CAMERA->isPressed()
-			                                                ? glm::vec3(8, 8, 8)
-			                                                : GameConstants::player->position + glm::vec3(0, 1.8, 0));
-
-		for (int i = 0; i < lights.size(); ++i) {
-			std::string idx = std::to_string(i);
-			GameConstants::defaultShader.setVec3("pointLights[" + idx + "].position", lights[i].position);
-			GameConstants::defaultShader.setVec3("pointLights[" + idx + "].ambient", lights[i].ambient);
-			GameConstants::defaultShader.setVec3("pointLights[" + idx + "].diffuse", lights[i].diffuse);
-			GameConstants::defaultShader.setVec3("pointLights[" + idx + "].specular", lights[i].specular);
-			GameConstants::defaultShader.setFloat("pointLights[" + idx + "].constant", lights[i].constant);
-			GameConstants::defaultShader.setFloat("pointLights[" + idx + "].linear", lights[i].linear);
-			GameConstants::defaultShader.setFloat("pointLights[" + idx + "].quadratic", lights[i].quadratic);
-		}
-
-		glm::vec3 sunColour =glm::vec3(1.0, 0.95, 0.85);
-		GameConstants::defaultShader.setVec3("dirLight.direction", glm::vec3(1000, -1000, 1000));
-		GameConstants::defaultShader.setVec3("dirLight.ambient", sunColour / 100.0f);
-		GameConstants::defaultShader.setVec3("dirLight.diffuse", sunColour);
-		GameConstants::defaultShader.setVec3("dirLight.specular", sunColour / 6.0f);
-
-		GameConstants::defaultShader.setFloat("gamma", gamma);
-		GameConstants::defaultShader.setFloat("exposure", exposure);
-
-		GameConstants::defaultShader.setInt("pointLightsAmount", lights.size());
-
-		GameConstants::defaultShader.setInt("debugRenderMode", GameConstants::debugRenderMode);
-
-		Profiler::endSection("Lighting");
-
-		GameConstants::defaultShader.setMat4("projection", projection);
-		GameConstants::defaultShader.setMat4("view", view);
-		GameConstants::defaultShader.setMat4("model", model);
-
-		GameConstants::simpleShader.setMat4("projection", projection);
-		GameConstants::simpleShader.setMat4("view", view);
-
-		glClearColor(0.46, 0.74, 0.89, 1.0f);
+		glClearColor(0, 0, 0, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		if (GameConstants::postProcessingEnabled) {
-			glBindFramebuffer(GL_FRAMEBUFFER, postFBO);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		}
-
 		Profiler::beginSection("Render");
-		GameConstants::world.drawWorld(deltaTime);
+		GameConstants::world.drawWorld(projection);
 		Profiler::endSection("Render");
-
-		if (GameConstants::postProcessingEnabled) {
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			GameConstants::postProcessor.use();
-			GameConstants::postProcessor.setFloat("gamma", gamma);
-			GameConstants::postProcessor.setFloat("exposure", exposure);
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, colorBuffer);
-
-			glDisable(GL_CULL_FACE);
-			renderQuad();
-			glEnable(GL_CULL_FACE);
-		}
-
-		GameConstants::simpleShader.use();
-		GameConstants::simpleShader.setMat4("projection", projection);
-		GameConstants::simpleShader.setMat4("view", view);
-
-		glBindVertexArray(lightCubeVAO);
-
-
-		for (unsigned int i = 0; i < std::size(lights); i++) {
-			glm::mat4 model1 = glm::mat4(1.0f);
-			model1 = glm::translate(model1, lights[i].position);
-			model1 = glm::scale(model1, glm::vec3(0.2f));
-			GameConstants::simpleShader.setMat4("model", model1);
-			GameConstants::simpleShader.setVec3("lightColour", lights[i].diffuse);
-
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
-
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		// glDepthFunc(GL_LEQUAL);
-		// glDepthMask(GL_FALSE);
-		//
-		// GameConstants::skyboxShader.use();
-		//
-		// float time = (float) glfwGetTime() * 0.5f - 0.0f;
-		// GameConstants::skyboxShader.setFloat("time", time);
-		//
-		// GameConstants::skyboxShader.setMat4("view", view);
-		// GameConstants::skyboxShader.setMat4("projection", projection);
-		//
-		// GameConstants::skyboxShader.setFloat("cirrus", 0.4f);
-		// GameConstants::skyboxShader.setFloat("cumulus", 0.6f);
-		//
-		// skybox->drawBasic(GameConstants::skyboxShader);
-		// glDepthMask(GL_TRUE);
-		// glDepthFunc(GL_LESS);
 
 		//disables gamma correction, so colours aren't washed out
 		if (GameConstants::debugging) {
@@ -549,46 +305,17 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
 		float sensitivity = 50.0f;
 		glfwGetWindowPos(window, &windowX, &windowY);
 
-		//we dont wan NaN from /0
-		GameConstants::player->yaw -= (xpos - (windowX + GameConstants::window_width / 2)) / max(
-					maxSensitivity - sensitivity, 1.0f) /
-				20;
-		GameConstants::player->pitch -= (ypos - (windowY + GameConstants::window_height / 2)) / max(
-					maxSensitivity - sensitivity, 1.0f)
-				/ 20;
-
-		GameConstants::player->yaw = glm::mod(GameConstants::player->yaw, 360.0f);
-		GameConstants::player->pitch = glm::clamp(GameConstants::player->pitch, -89.0f, 89.0f);
+		// //we dont wan NaN from /0
+		// GameConstants::player->yaw -= (xpos - (windowX + GameConstants::window_width / 2)) / max(
+		// 			maxSensitivity - sensitivity, 1.0f) /
+		// 		20;
+		// GameConstants::player->pitch -= (ypos - (windowY + GameConstants::window_height / 2)) / max(
+		// 			maxSensitivity - sensitivity, 1.0f)
+		// 		/ 20;
+		//
+		// GameConstants::player->yaw = glm::mod(GameConstants::player->yaw, 360.0f);
+		// GameConstants::player->pitch = glm::clamp(GameConstants::player->pitch, -89.0f, 89.0f);
 
 		glfwSetCursorPos(window, windowX + GameConstants::window_width / 2, windowY + GameConstants::window_height / 2);
 	}
-}
-
-//simple screen overlay
-unsigned int quadVAO = 0;
-unsigned int quadVBO;
-void renderQuad() {
-    if (quadVAO == 0)
-    {
-        float quadVertices[] = {
-            // positions        // texture Coords
-            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
-            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-             1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-             1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-        };
-        // setup plane VAO
-        glGenVertexArrays(1, &quadVAO);
-        glGenBuffers(1, &quadVBO);
-        glBindVertexArray(quadVAO);
-        glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    }
-    glBindVertexArray(quadVAO);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    glBindVertexArray(0);
 }

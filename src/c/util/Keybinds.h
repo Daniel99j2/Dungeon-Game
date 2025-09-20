@@ -53,34 +53,6 @@ public:
                                                                false, false, false, true);
                                                        }, []() {
                                                        });
-    std::shared_ptr<Keybind> MOVE_UP = make_keybind(GLFW_KEY_SPACE, Keybind::HOLD, "Move Up",
-                                                    []() {
-                                                    },
-                                                    []() {
-                                                        float max_speed = 10;
-                                                        GameConstants::player->velocity.y += GameConstants::player->speed;
-
-                                                        if (GameConstants::player->velocity.y > max_speed)
-                                                            GameConstants::player->velocity.y = (glm::normalize(GameConstants::player->velocity) * max_speed).y;
-                                                    }, []() {
-                                                    });
-    std::shared_ptr<Keybind> MOVE_DOWN = make_keybind(GLFW_KEY_LEFT_SHIFT, Keybind::HOLD, "Move Down",
-                                                      []() {
-                                                      },
-                                                      []() {
-                                                          float max_speed = 10;
-                                                          GameConstants::player->velocity.y -= GameConstants::player->speed;
-
-                                                          if (GameConstants::player->velocity.y < -max_speed)
-                                                              GameConstants::player->velocity.y = (glm::normalize(GameConstants::player->velocity) * max_speed).y;
-                                                      }, []() {
-                                                      });
-    std::shared_ptr<Keybind> TOGGLE_CAMERA = make_keybind(GLFW_KEY_C, Keybind::TOGGLE, "Toggle Camera",
-                                                          []() {
-                                                          },
-                                                          []() {
-                                                          }, []() {
-                                                          });
     std::shared_ptr<Keybind> TOGGLE_CURSOR = make_keybind(GLFW_KEY_T, Keybind::TOGGLE, "Toggle Cursor lock",
                                                           []() {
                                                           },

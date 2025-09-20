@@ -1,16 +1,11 @@
 #include "GameObject.h"
 #include "../util/GameConstants.h"
-#include "../util/model/ModelLoader.h"
 #include "../PreImports.h"
 #include <glm/gtx/quaternion.hpp>
 #include "../world/CollisionUtil.h"
 
 GameObject::GameObject(const glm::vec3 vec)
-    : position(vec),
-      mass(1.0f),
-      gravity(0.98),
-      model(ModelLoader::getModel("unknown")),
-      shader(GameConstants::defaultShader) {
+    : position(vec) {
 }
 
 GameObject::GameObject() {
@@ -21,19 +16,11 @@ void GameObject::applySlowdown(float drag) {
     velocity *= (1.0f - drag);
 }
 
-std::vector<ShapeVariant>* GameObject::getCollisionParts() const {
-    return &this->model->collisionMap->collisionParts;
-}
-
 void GameObject::update(float dt) {
     collisions.clear();
 }
 
-void GameObject::draw(float deltaTime) {
-    shader.use();
-    animator.tick(deltaTime);
-    model->draw(shader, this->transform, animator);
-
+void GameObject::draw(glm::mat4 projection) {
     if (GameConstants::debugCollision) {
         GameConstants::simpleShader.use();
         // for (auto& part : *getCollisionParts()) {
@@ -57,8 +44,6 @@ void GameObject::draw(float deltaTime) {
 void GameObject::baseTick() {
     this->transform = glm::mat4(1.0f);
     this->transform = glm::translate(this->transform, this->position);
-    this->transform = glm::rotate(this->transform, glm::radians(this->yaw), glm::vec3(0, 1, 0));
-    this->transform = glm::rotate(this->transform, glm::radians(this->pitch), glm::vec3(1, 0, 0));
     this->tick();
 }
 

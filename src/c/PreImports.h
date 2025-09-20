@@ -22,6 +22,8 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <shlobj.h>
+#include <winnls.h>
 
 #include <string>
 #include <thread>

@@ -7,6 +7,7 @@
 #include <sstream>
 #include <iostream>
 #include <utility>
+#include <GL/glew.h>
 
 class Shader {
 public:
@@ -74,20 +75,21 @@ public:
 private:
     void checkCompileErrors(GLuint shader, const std::string& type) {
         GLint success;
-        GLchar infoLog[1024];
+        char* infoLog = new char[1024];
         if (type != "PROGRAM") {
             glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
             if (!success) {
                 glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-                std::cerr << "[ERROR] [Shader] Compilation error of type for " << this->ID << ": " << type << std::endl << infoLog << std::endl;
+                std::cerr << "[ERROR] [Shader] Compilation error of type for " << this->vertexPath << ": " << type << std::endl << infoLog << std::endl;
             }
         } else {
             glGetProgramiv(shader, GL_LINK_STATUS, &success);
             if (!success) {
                 glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-                std::cerr << "[ERROR] [Shader] Program link error of type for " << this->ID << ": " << type << std::endl << infoLog << std::endl;
+                std::cerr << "[ERROR] [Shader] Program link error of type for " << this->vertexPath << ": " << type << std::endl << infoLog << std::endl;
             }
         }
+        delete[] infoLog;
     }
 
     void setup() {
@@ -114,7 +116,7 @@ private:
                 geometryCode = gShaderStream.str();
             }
         } catch (std::ifstream::failure& e) {
-            std::cerr << "[ERROR] [Shader] File " << this->ID << " not successfully read:" << e.what() << std::endl;
+            std::cerr << "[ERROR] [Shader] Shader file(s) for vertex file: " << this->vertexPath << " not successfully read:" << e.what() << std::endl;
         }
 
         const char* vShaderCode = vertexCode.c_str();

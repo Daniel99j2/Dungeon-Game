@@ -1,2 +1,5 @@
 Brushes:
  - 15px for outlines
+
+ Font:
+ - https://www.fontsquirrel.com/fonts/Munro

@@ -3,7 +3,6 @@
 //
 
 #include "GameConstants.h"
-
 #include "../objects/type/Player.h"
 #include "Keybinds.h"
 #include "../world/World.h"
@@ -20,9 +19,12 @@ int GameConstants::window_width = 1280;
 GLFWwindow* GameConstants::window;
 bool GameConstants::fullscreen = false;
 
-Shader GameConstants::defaultShader;
-Shader GameConstants::skyboxShader;
+Shader GameConstants::foregroundShader;
+Shader GameConstants::backgroundShader;
 Shader GameConstants::simpleShader;
+Shader GameConstants::objectShader;
+Shader GameConstants::uiShader;
+Shader GameConstants::textShader;
 Shader GameConstants::postProcessor;
 
 std::shared_ptr<Player> GameConstants::player;

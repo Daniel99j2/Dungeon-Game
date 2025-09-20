@@ -8,8 +8,7 @@
 #include <future>
 #include <stb_image_write.h>
 
-#include "Animation.h"
-#include "Animation.h"
+#include "Shader.h"
 
 using namespace std;
 using namespace rectpack2D;
@@ -198,15 +197,18 @@ std::string RenderUtil::getAtlasName(const std::string &path) {
     return out;
 }
 
-RenderUtil::Atlas* getAtlas(const std::string &path) {
-    if (atlases.empty()) throw std::runtime_error("Cannot access atlases before creation!!!");
-    
-    std::string out = RenderUtil::getAtlasName(path);
-    
-    if (!atlases.contains(out)) throw std::runtime_error("Cannot access atlas " + out + " before creation!!!");
-
-    return &atlases[out];
+RenderUtil::Atlas* RenderUtil::getAtlas(const std::string &path) {
+    return RenderUtil::getAtlasByName(getAtlasName(path));
 }
+
+RenderUtil::Atlas* RenderUtil::getAtlasByName(const std::string &name) {
+    if (atlases.empty()) throw std::runtime_error("Cannot access atlases before creation!!!");
+
+    if (!atlases.contains(name)) throw std::runtime_error("Cannot access atlas " + name + " before creation!!!");
+
+    return &atlases[name];
+}
+
 
 glm::vec2 RenderUtil::getUV(const std::string &path, const glm::vec2 &originalUV) {
     if (path.find("_") != std::string::npos) return originalUV;
@@ -235,7 +237,7 @@ glm::vec2 RenderUtil::getUV(const std::string &path, const glm::vec2 &originalUV
 }
 
 RenderUtil::AtlasRegion *getRegion(const std::string &path) {
-    return &getAtlas(path)->regions.find(path)->second;
+    return &RenderUtil::getAtlas(path)->regions.find(path)->second;
 }
 
 void RenderUtil::genOrLoadAtlas(bool forceRegenerate) {
@@ -260,11 +262,11 @@ void RenderUtil::genOrLoadAtlas(bool forceRegenerate) {
 
     std::string folder = "output/atlases/";
 
-    std::vector<std::future<void>> futures;
+    std::vector<std::future<void>> futuresToBuild;
     std::mutex atlasMutex;
 
     for (auto &[atlasName, images]: requiredAtlases) {
-        futures.push_back(std::async(std::launch::async, [&, atlasName, images]() {
+        //futuresToBuild.push_back(std::async(std::launch::async, [&, atlasName, images]() {
             std::string atlasPng = (folder + "atlas_" + atlasName + ".png");
             std::string atlasMeta = (folder + "atlas_" + atlasName + ".json");
 
@@ -391,10 +393,40 @@ void RenderUtil::genOrLoadAtlas(bool forceRegenerate) {
 
             std::scoped_lock lock(atlasMutex);
             atlases.emplace(atlasName, a);
-        }));
+        //}));
     }
 
-    for (auto &f: futures) {
-        f.get();
+    //for (auto &f: futures) {
+    //    f.get();
+    //}
+}
+
+
+//simple screen overlay
+unsigned int quadVAO = 0;
+unsigned int quadVBO;
+void RenderUtil::renderQuad() {
+    if (quadVAO == 0)
+    {
+        float quadVertices[] = {
+            // positions        // texture Coords
+            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+             1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+             1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+        };
+        // setup plane VAO
+        glGenVertexArrays(1, &quadVAO);
+        glGenBuffers(1, &quadVBO);
+        glBindVertexArray(quadVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     }
+    glBindVertexArray(quadVAO);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glBindVertexArray(0);
 }

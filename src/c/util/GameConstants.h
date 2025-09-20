@@ -11,6 +11,7 @@ class World;
 class Player;
 class Shader;
 class Keybinds;
+class Config;
 
 class GameConstants {
 public:
@@ -25,9 +26,12 @@ public:
     static int window_height;
     static bool fullscreen;
 
-    static Shader defaultShader;
-    static Shader skyboxShader;
+    static Shader foregroundShader;
+    static Shader backgroundShader;
     static Shader simpleShader;
+    static Shader objectShader;
+    static Shader uiShader;
+    static Shader textShader;
     static Shader postProcessor;
 
     static std::shared_ptr<Player> player;

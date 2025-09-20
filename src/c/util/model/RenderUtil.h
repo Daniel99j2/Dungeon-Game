@@ -29,6 +29,8 @@ public:
 
 	static void genOrLoadAtlas(bool forceRegenerate);
 
+	static void renderQuad();
+
 	static glm::vec2 getUV(const std::string &texturePath, const glm::vec2 &originalUV);
 
 	struct AtlasRegion {
@@ -42,4 +44,8 @@ public:
 		std::unordered_map<std::string, AtlasRegion> regions;
 		std::string path;
 	};
+
+	static Atlas* getAtlas(const std::string &path);
+
+	static Atlas *getAtlasByName(const std::string &name);
 };
