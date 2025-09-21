@@ -13,5 +13,5 @@ public:
 
     void move(bool w, bool a, bool s, bool d);
 
-    void draw(glm::mat4 projection) override;
+    void draw(const glm::mat4 &projection) const override;
 };

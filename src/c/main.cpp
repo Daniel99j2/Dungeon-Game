@@ -19,6 +19,7 @@
 #include "world/CollisionLoader.h"
 
 #include "misc/Config.h"
+#include "objects/type/MapPartObject.h"
 
 //the bin folder contents needs to be copied!
 
@@ -56,7 +57,7 @@ int main(int argc, char *argv[]) {
 	Config::load();
 
 	if (!glfwInit()) {
-		return -1;
+		throw std::runtime_error("Failed to initialize GLFW!");
 	}
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -68,9 +69,7 @@ int main(int argc, char *argv[]) {
 	                                      NULL, NULL);
 	GameConstants::window = window;
 	if (!window) {
-		std::cerr << "[ERROR] [Main] Couldn't create the window!" << std::endl;
-		glfwTerminate();
-		return -1;
+		throw std::runtime_error("Failed to create GLFW window!");
 	}
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -78,8 +77,7 @@ int main(int argc, char *argv[]) {
 	glEnable(GL_DEPTH_TEST);
 
 	if (const GLenum err = glewInit(); err != GLEW_OK) {
-		std::cerr << "[ERROR] [Main] GLEW init failed: " << glewGetErrorString(err) << std::endl;
-		return -1;
+		throw std::runtime_error("Failed to initialize GLEW!");
 	}
 
 	IMGUI_CHECKVERSION();
@@ -122,10 +120,15 @@ int main(int argc, char *argv[]) {
 	GameConstants::player = std::make_shared<Player>(glm::vec3(0, 0, 0));;
 	GameConstants::world.addObject(std::static_pointer_cast<GameObject>(GameConstants::player));
 
+	MapPartObject object = MapPartObject(glm::vec3(0, 0, 0), "t", BACKGROUND);
+	GameConstants::world.addObject(std::make_shared<MapPartObject>(object));
+
 	glDepthMask(GL_TRUE);
 	glEnable(GL_CULL_FACE);
 
 	glfwSwapInterval(1);
+
+	glfwSetWindowTitle(window, "Dungeon Game");
 
 	while (!glfwWindowShouldClose(window)) {
 		std::chrono::high_resolution_clock::time_point now = std::chrono::high_resolution_clock::now();
@@ -154,17 +157,14 @@ int main(int argc, char *argv[]) {
 		auto model = glm::mat4(1.0f);
 		auto view = glm::mat4(1.0f);
 
-		//dont divide by 0
-		int fbWidth, fbHeight;
-		glfwGetFramebufferSize(GameConstants::window, &fbWidth, &fbHeight);
-		float aspect = (fbHeight > 0) ? (float) fbWidth / fbHeight : 4.0f / 3.0f;
+		float worldWidth = 80.0f; // the world units fit on screen amount
+		float worldHeight = 45.0f;
 
 		glm::mat4 projection = glm::ortho(
-			0.0f, (float) fbWidth,
-			0.0f, (float) fbHeight,
-			-1.0f, 1.0f
-		);;
-
+			0.0f, worldWidth,        // left, right
+			0.0f, worldHeight,       // bottom, top
+			-1.0f, 1.0f              // near, far
+		);
 		glEnable(GL_DEPTH_TEST);
 
 		Profiler::beginSection("Main");
@@ -231,9 +231,6 @@ int main(int argc, char *argv[]) {
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 		Profiler::endSection("GLFW Render");
-
-		string title = ("Dungeon Game!!!");
-		glfwSetWindowTitle(window, title.c_str());
 
 		Profiler::endFrame();
 	}

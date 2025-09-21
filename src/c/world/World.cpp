@@ -37,7 +37,7 @@ static GridCoord toGrid(const glm::vec3 &pos) {
 	};
 }
 
-void World::drawWorld(glm::mat4 projection) const {
+void World::drawWorld(const glm::mat4 &projection) const {
 	for (auto &object: gameObjects) {
 		object->draw(projection);
 	}

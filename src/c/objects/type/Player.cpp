@@ -52,13 +52,13 @@ void Player::move(bool w, bool a, bool s, bool d) {
     //     velocity = glm::normalize(velocity) * max_speed;
 }
 
-void Player::draw(glm::mat4 projection) {
+void Player::draw(const glm::mat4 &projection) const {
     GameConstants::backgroundShader.use();
     GameConstants::backgroundShader.setMat4("projection", projection);
     GameConstants::backgroundShader.setMat4("view", glm::mat4(1));
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(position.x, position.y, 0.0f));
-    model = glm::scale(model, glm::vec3(RenderUtil::getAtlasByName("ui")->width, RenderUtil::getAtlasByName("ui")->height, 1.0f));
+    model = glm::scale(model, glm::vec3(2, 2, 1.0f));
     GameConstants::backgroundShader.setMat4("model", model);
     GameConstants::backgroundShader.setInt("tex", 0);
     glActiveTexture(GL_TEXTURE0);

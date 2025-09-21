@@ -3,6 +3,10 @@
 #include <vector>
 #include <memory>
 
+#include "GameObject.h"
+#include "GameObject.h"
+#include "GameObject.h"
+#include "GameObject.h"
 #include "../util/model/Shader.h"
 
 enum class ShapeType {
@@ -22,13 +26,13 @@ public:
     glm::vec2 velocity = glm::vec2(0);
     std::string type;
     int id = -1;
-    std::vector<Collision> collisions;
+    bool collidable = true;
 
     void applySlowdown(float drag);
 
     void update(float dt);
 
-    virtual void draw(glm::mat4 projection);
+    virtual void draw(const glm::mat4 &projection) const;
     void baseTick();
     virtual void tick() = 0;
     virtual ~GameObject() = default;
