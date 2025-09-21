@@ -59,6 +59,12 @@ add_executable(
         src/c/world/CollisionLoader.h
         src/c/misc/Config.h
         src/c/misc/Config.cpp
+        src/c/card/GameEffectManager.cpp
+        src/c/card/GameEffectManager.h
+        src/c/card/Card.cpp
+        src/c/card/Card.h
+        src/c/card/Cards.h
+        src/c/card/Cards.cpp
 )
 
 include_directories(

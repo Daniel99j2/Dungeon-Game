@@ -6,10 +6,16 @@
 
 #include "GameConstants.h"
 using namespace std;
+unsigned int last = 0;
+
+int GenericUtil::randomRandom() {
+    unsigned seed = chrono::system_clock::now().time_since_epoch().count()+last;
+    last = seed;
+    return seed;
+}
 
 int GenericUtil::randomInt(int min, int max) {
-    unsigned seed = chrono::system_clock::now().time_since_epoch().count();
-    minstd_rand0 generator (seed);
+    minstd_rand0 generator (randomRandom());
     return min + generator() % (max - min + 1);
 }
 

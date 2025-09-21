@@ -10,6 +10,8 @@
 
 class GenericUtil {
 public:
+    static int randomRandom();
+
     static int randomInt(int i, int i1);
 
     static float randomFloat(float min, float max, int i);

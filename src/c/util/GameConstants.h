@@ -7,6 +7,7 @@
 
 #include <GLFW/glfw3.h>
 
+class Card;
 class World;
 class Player;
 class Shader;
@@ -35,6 +36,7 @@ public:
 
     static std::shared_ptr<Player> player;
     static World world;
+    static std::vector<Card> ownedDeck;
     static Keybinds keybindsManager;
     static GLFWwindow* window;
 };

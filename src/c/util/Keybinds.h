@@ -111,6 +111,6 @@ public:
     );
 
 private:
-    int windowPosX, windowPosY;
-    int windowedWidth, windowedHeight;
+    int windowPosX = 0, windowPosY = 0;
+    int windowedWidth = 0, windowedHeight = 0;
 };

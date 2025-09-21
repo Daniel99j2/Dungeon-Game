@@ -28,5 +28,6 @@ Shader GameConstants::postProcessor;
 
 std::shared_ptr<Player> GameConstants::player;
 World GameConstants::world;
+std::vector<Card> GameConstants::ownedDeck;
 
 Keybinds GameConstants::keybindsManager = Keybinds();
