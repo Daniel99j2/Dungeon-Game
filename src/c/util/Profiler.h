@@ -44,7 +44,15 @@ public:
 	static float fpsHistory[100];
 	static int fpsIndex;
 
+	static void startupTimer(const std::string &stage) {
+		if (GameConstants::debug) {
+			std::cout << ("Stage: " + stage + " took " + std::to_string(glfwGetTime()-lastSetupTime) + " seconds to complete!") << std::endl;
+			lastSetupTime = glfwGetTime();
+		}
+	}
+
 private:
 	static inline std::unordered_map<std::string, std::chrono::high_resolution_clock::time_point> startTimes;
 	static inline std::unordered_map<std::string, ProfileResult> results;
+	static inline double lastSetupTime;
 };

@@ -8,6 +8,7 @@
 #include <chrono>
 #include <random>
 
+#include "Card.h"
 #include "Cards.h"
 #include "../util/GenericUtil.h"
 

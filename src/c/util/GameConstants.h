@@ -28,11 +28,11 @@ public:
 
     static Shader foregroundShader;
     static Shader backgroundShader;
+    static Shader cardShader;
     static Shader simpleShader;
     static Shader objectShader;
     static Shader uiShader;
     static Shader textShader;
-    static Shader postProcessor;
 
     static std::shared_ptr<Player> player;
     static World world;

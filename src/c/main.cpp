@@ -12,6 +12,7 @@
 #include "world/World.h"
 
 #include <stb_image.h>
+#include <stb_image_write.h>
 #include <CGAL/basic.h>
 #include <CGAL/Polygon_mesh_processing/intersection.h>
 
@@ -92,10 +93,15 @@ int main(int argc, char *argv[]) {
 	ImGui_ImplOpenGL3_Init("#version 330 core");
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 
+	Profiler::startupTimer("Init");
+
 	GLFWimage *icon = RenderUtil::getImageData("src/resources/textures/ui/icon");
 	glfwSetWindowIcon(window, 1, icon);
 	stbi_image_free(icon->pixels);
 	delete icon;
+
+	stbi_set_flip_vertically_on_load(true);
+	stbi_flip_vertically_on_write(true);
 
 	GameConstants::foregroundShader = Shader("foreground");
 	GameConstants::backgroundShader = Shader("background");
@@ -103,13 +109,17 @@ int main(int argc, char *argv[]) {
 	GameConstants::objectShader = Shader("object");
 	GameConstants::textShader = Shader("text");
 	GameConstants::uiShader = Shader("ui");
-	GameConstants::postProcessor = Shader("post");
-	GameConstants::postProcessor.use();
-	GameConstants::postProcessor.setInt("hdrBuffer", 0);
+	GameConstants::cardShader = Shader("card");
 
-	RenderUtil::genOrLoadAtlas(true);
+	Profiler::startupTimer("Shader Setup");
+
+	RenderUtil::genAtlases();
+
+	Profiler::startupTimer("Atlases");
 
 	CollisionLoader::loadCollisionMaps();
+
+	Profiler::startupTimer("Collision Maps");
 
 	glm::vec3 lightPos(1.5f, 1.0f, -2.3f);
 
@@ -120,7 +130,7 @@ int main(int argc, char *argv[]) {
 	GameConstants::player = std::make_shared<Player>(glm::vec3(0, 0, 0));;
 	GameConstants::world.addObject(std::static_pointer_cast<GameObject>(GameConstants::player));
 
-	MapPartObject object = MapPartObject(glm::vec3(0, 0, 0), "t", BACKGROUND);
+	MapPartObject object = MapPartObject(glm::vec3(0, 0, 0), "_rooms/coffins", BACKGROUND);
 	GameConstants::world.addObject(std::make_shared<MapPartObject>(object));
 
 	glDepthMask(GL_TRUE);
@@ -157,22 +167,17 @@ int main(int argc, char *argv[]) {
 		auto model = glm::mat4(1.0f);
 		auto view = glm::mat4(1.0f);
 
-		float worldWidth = 80.0f; // the world units fit on screen amount
-		float worldHeight = 45.0f;
-
-		glm::mat4 projection = glm::ortho(
-			0.0f, worldWidth,        // left, right
-			0.0f, worldHeight,       // bottom, top
-			-1.0f, 1.0f              // near, far
-		);
 		glEnable(GL_DEPTH_TEST);
 
 		Profiler::beginSection("Main");
-		glClearColor(0, 0, 0, 1.0f);
+		glClearColor(0.2, 0.2, 0.2, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		Profiler::beginSection("Render");
-		GameConstants::world.drawWorld(projection);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, RenderUtil::getAtlasByName("objects")->id);
+		//GL_TEXTURE1 is used in MapObjects
+		GameConstants::world.drawWorld();
 		Profiler::endSection("Render");
 
 		//disables gamma correction, so colours aren't washed out

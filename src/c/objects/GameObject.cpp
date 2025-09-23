@@ -19,7 +19,7 @@ void GameObject::applySlowdown(float drag) {
 void GameObject::update(float dt) {
 }
 
-void GameObject::draw(const glm::mat4 &projection) const {
+void GameObject::draw() const {
     if (GameConstants::debugCollision) {
         GameConstants::simpleShader.use();
         // for (auto& part : *getCollisionParts()) {

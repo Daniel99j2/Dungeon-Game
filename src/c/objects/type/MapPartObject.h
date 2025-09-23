@@ -20,4 +20,6 @@ public:
     explicit MapPartObject(const glm::vec3& vec, const std::string &image, const Layer &layer);
 
     void tick() override;
+
+    void draw() const override;
 };

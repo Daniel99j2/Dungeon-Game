@@ -4,6 +4,7 @@
 
 #include "Player.h"
 
+#include "../../card/Cards.h"
 #include "../../util/GameConstants.h"
 #include "../../util/model/RenderUtil.h"
 
@@ -52,16 +53,15 @@ void Player::move(bool w, bool a, bool s, bool d) {
     //     velocity = glm::normalize(velocity) * max_speed;
 }
 
-void Player::draw(const glm::mat4 &projection) const {
+void Player::draw() const {
     GameConstants::backgroundShader.use();
-    GameConstants::backgroundShader.setMat4("projection", projection);
+    GameConstants::backgroundShader.setMat4("projection", RenderUtil::getGuiProjection());
     GameConstants::backgroundShader.setMat4("view", glm::mat4(1));
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(position.x, position.y, 0.0f));
-    model = glm::scale(model, glm::vec3(2, 2, 1.0f));
+    model = glm::translate(model, glm::vec3(GameConstants::window_width/2, GameConstants::window_height/2, 0.0f));
+    model = glm::scale(model, glm::vec3(100, 100, 1.0f));
     GameConstants::backgroundShader.setMat4("model", model);
     GameConstants::backgroundShader.setInt("tex", 0);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, RenderUtil::getAtlasByName("ui")->id);
     RenderUtil::renderQuad();
+    Cards::renderCard(*Cards::DEV_TEST_CARD, glm::vec2(1, 2), 500);
 }

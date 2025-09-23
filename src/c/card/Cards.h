@@ -3,22 +3,16 @@
 //
 
 #pragma once
+
 #include <memory>
 #include <vector>
 #include <glm/vec2.hpp>
 
-#include "Card.h"
-#include "GameEffectManager.h"
+class Card;
 
 class Cards {
 public:
-	static std::vector<std::shared_ptr<Card> > cards;
-
-	static std::shared_ptr<Card> make_card(const Card &card) {
-		auto shared = std::make_shared<Card>(card);
-		cards.push_back(shared);
-		return shared;
-	}
+	static std::vector<std::shared_ptr<Card>> cards;
 
 	// BANE
 	static std::shared_ptr<Card> STUMBLE;
@@ -79,6 +73,7 @@ public:
 	static std::shared_ptr<Card> A_SHOT_IN_THE_DARK;
 
 
-	static void renderCard(Card &card, glm::vec2 pos, glm::vec2 scale) {
-	}
+	static std::shared_ptr<Card> DEV_TEST_CARD;
+
+	static void renderCard(const Card &card, glm::vec2 pos, int pxWide);
 };

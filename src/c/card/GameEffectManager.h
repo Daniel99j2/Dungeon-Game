@@ -3,7 +3,10 @@
 //
 
 #pragma once
-#include "Card.h"
+
+#include <vector>
+
+class Card;
 
 class GameEffectManager {
 public:

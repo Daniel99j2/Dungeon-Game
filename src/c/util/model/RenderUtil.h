@@ -19,6 +19,8 @@ public:
 
 	static GLuint genTexture(std::string path);
 
+	static GLuint getOrGenTexture(std::string path);
+
 	static GLuint genFromData(const stbi_uc *buffer, int bufferSize, GLenum format);
 
 	static GLuint genFromSolidColour(glm::vec4 colour, GLenum format);
@@ -27,7 +29,7 @@ public:
 
 	static std::string getAtlasName(const std::string &path);
 
-	static void genOrLoadAtlas(bool forceRegenerate);
+	static void genAtlases();
 
 	static void renderQuad();
 
@@ -48,4 +50,8 @@ public:
 	static Atlas* getAtlas(const std::string &path);
 
 	static Atlas *getAtlasByName(const std::string &name);
+
+	static glm::mat4 getWorldProjection();
+
+	static glm::mat4 getGuiProjection();
 };

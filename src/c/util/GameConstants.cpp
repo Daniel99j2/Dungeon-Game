@@ -5,6 +5,8 @@
 #include "GameConstants.h"
 #include "../objects/type/Player.h"
 #include "Keybinds.h"
+#include "../card/Card.h"
+#include "model/Shader.h"
 #include "../world/World.h"
 
 bool GameConstants::wireframe = false;
@@ -20,11 +22,11 @@ bool GameConstants::fullscreen = false;
 
 Shader GameConstants::foregroundShader;
 Shader GameConstants::backgroundShader;
+Shader GameConstants::cardShader;
 Shader GameConstants::simpleShader;
 Shader GameConstants::objectShader;
 Shader GameConstants::uiShader;
 Shader GameConstants::textShader;
-Shader GameConstants::postProcessor;
 
 std::shared_ptr<Player> GameConstants::player;
 World GameConstants::world;

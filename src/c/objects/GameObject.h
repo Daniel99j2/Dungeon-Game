@@ -32,7 +32,7 @@ public:
 
     void update(float dt);
 
-    virtual void draw(const glm::mat4 &projection) const;
+    virtual void draw() const;
     void baseTick();
     virtual void tick() = 0;
     virtual ~GameObject() = default;

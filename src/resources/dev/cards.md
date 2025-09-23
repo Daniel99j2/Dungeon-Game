@@ -273,6 +273,7 @@
 
 ## A shot in the dark
 <p style="color:yellow">Purchased</p>
+<p style="color:gold">Permanent</p>
 <p style="color:purple">Ethereal</p>
 <p style="color:moccasin">Cost: 2👑 Max: 3</p>
 <p>+10🪜</p>
