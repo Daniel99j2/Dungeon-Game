@@ -13,5 +13,5 @@ public:
 
     void move(bool w, bool a, bool s, bool d);
 
-    void draw() const override;
+    void draw(int *shadow) const override;
 };

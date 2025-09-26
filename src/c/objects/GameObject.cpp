@@ -19,7 +19,7 @@ void GameObject::applySlowdown(float drag) {
 void GameObject::update(float dt) {
 }
 
-void GameObject::draw() const {
+void GameObject::draw(int *shadow) const {
     if (GameConstants::debugCollision) {
         GameConstants::simpleShader.use();
         // for (auto& part : *getCollisionParts()) {
@@ -39,6 +39,11 @@ void GameObject::draw() const {
         // }
     }
 }
+
+void GameObject::drawShadow() const {
+
+}
+
 
 void GameObject::baseTick() {
     this->tick();

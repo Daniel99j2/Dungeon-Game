@@ -7,7 +7,7 @@
 
 class World {
 public:
-    void drawWorld() const;
+    std::vector<std::shared_ptr<GameObject>> gameObjects;
 
     void tick(float deltaTime);
 
@@ -18,7 +18,6 @@ public:
     }
 
 private:
-    std::vector<std::shared_ptr<GameObject>> gameObjects;
     int currentId = 0;
 
     void simulatePhysics(float deltaTime);

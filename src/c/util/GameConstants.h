@@ -30,7 +30,7 @@ public:
     static Shader backgroundShader;
     static Shader cardShader;
     static Shader simpleShader;
-    static Shader objectShader;
+    static Shader shadowShader;
     static Shader uiShader;
     static Shader textShader;
 

@@ -21,5 +21,7 @@ public:
 
     void tick() override;
 
-    void draw() const override;
+    void draw(int *shadow) const override;
+
+    void drawShadow() const override;
 };

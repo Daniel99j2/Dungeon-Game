@@ -32,7 +32,8 @@ public:
 
     void update(float dt);
 
-    virtual void draw() const;
+    virtual void draw(int *shadow) const;
+    virtual void drawShadow() const;
     void baseTick();
     virtual void tick() = 0;
     virtual ~GameObject() = default;

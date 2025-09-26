@@ -90,8 +90,13 @@ int main(int argc, char *argv[]) {
 	ImGui::StyleColorsDark();
 
 	// Setup Platform/Renderer backends
-	ImGui_ImplOpenGL3_Init("#version 330 core");
+	ImGui_ImplOpenGL3_Init("#version 430 core");
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
+
+	GLuint ssbo;
+	glGenBuffers(1, &ssbo);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, 360 * sizeof(int), nullptr, GL_DYNAMIC_DRAW);
 
 	Profiler::startupTimer("Init");
 
@@ -106,7 +111,7 @@ int main(int argc, char *argv[]) {
 	GameConstants::foregroundShader = Shader("foreground");
 	GameConstants::backgroundShader = Shader("background");
 	GameConstants::simpleShader = Shader("simple");
-	GameConstants::objectShader = Shader("object");
+	GameConstants::shadowShader = Shader("shadow");
 	GameConstants::textShader = Shader("text");
 	GameConstants::uiShader = Shader("ui");
 	GameConstants::cardShader = Shader("card");
@@ -132,6 +137,9 @@ int main(int argc, char *argv[]) {
 
 	MapPartObject object = MapPartObject(glm::vec3(0, 0, 0), "_rooms/coffins", BACKGROUND);
 	GameConstants::world.addObject(std::make_shared<MapPartObject>(object));
+
+	MapPartObject object1 = MapPartObject(glm::vec3(0, 0, 0), "_rooms/entrance", FOREGROUND);
+	GameConstants::world.addObject(std::make_shared<MapPartObject>(object1));
 
 	glDepthMask(GL_TRUE);
 	glEnable(GL_CULL_FACE);
@@ -177,7 +185,23 @@ int main(int argc, char *argv[]) {
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, RenderUtil::getAtlasByName("objects")->id);
 		//GL_TEXTURE1 is used in MapObjects
-		GameConstants::world.drawWorld();
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo);
+
+		for (auto &object: GameConstants::world.gameObjects) {
+			object->drawShadow();
+		}
+
+		int results[360];
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
+		glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(results), results);
+		std::vector dummyData(360, std::numeric_limits<int>::max());
+		glBufferData(GL_SHADER_STORAGE_BUFFER, 360 * sizeof(int), dummyData.data(), GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+		for (auto &object: GameConstants::world.gameObjects) {
+			object->draw(results);
+		}
+
 		Profiler::endSection("Render");
 
 		//disables gamma correction, so colours aren't washed out

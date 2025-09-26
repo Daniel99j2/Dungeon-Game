@@ -32,7 +32,7 @@ public:
 	static std::shared_ptr<Card> SKILLFUL_RETREAT;
 	static std::shared_ptr<Card> TUNNEL_VISION;
 	static std::shared_ptr<Card> TREAD_LIGHTLY;
-	static std::shared_ptr<Card> GRAB_AND_RUN;
+	static std::shared_ptr<Card> LOOT_AND_SCOOT;
 	static std::shared_ptr<Card> FROST_FOCUS;
 	static std::shared_ptr<Card> CALL_OF_THE_DEEP;
 	static std::shared_ptr<Card> STONESKIN;
@@ -60,6 +60,7 @@ public:
 	static std::shared_ptr<Card> VANISH;
 	static std::shared_ptr<Card> SILENT_RUNNER;
 	static std::shared_ptr<Card> BRILLIANCE;
+	static std::shared_ptr<Card> POWER_OF_OBSERVATION;
 
 	// LEGENDARY
 	static std::shared_ptr<Card> THE_DARKEST_DEPTHS;

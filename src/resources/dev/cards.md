@@ -77,7 +77,7 @@
 <p style="color:moccasin">Cost: 18🔥 Max: 3</p>
 <p>Block +4 ⚠️</p>
 
-## Grab 'n' Run
+## Loot 'n' Scoot
 <p style="color:lime">Uncommon</p>
 <p style="color:moccasin">Cost: 20🔥 Max: 3</p>
 <p>+7 🪙</p>

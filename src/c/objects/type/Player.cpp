@@ -53,7 +53,7 @@ void Player::move(bool w, bool a, bool s, bool d) {
     //     velocity = glm::normalize(velocity) * max_speed;
 }
 
-void Player::draw() const {
+void Player::draw(int *shadow) const {
     GameConstants::backgroundShader.use();
     GameConstants::backgroundShader.setMat4("projection", RenderUtil::getGuiProjection());
     GameConstants::backgroundShader.setMat4("view", glm::mat4(1));

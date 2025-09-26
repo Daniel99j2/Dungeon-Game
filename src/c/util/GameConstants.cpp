@@ -24,7 +24,7 @@ Shader GameConstants::foregroundShader;
 Shader GameConstants::backgroundShader;
 Shader GameConstants::cardShader;
 Shader GameConstants::simpleShader;
-Shader GameConstants::objectShader;
+Shader GameConstants::shadowShader;
 Shader GameConstants::uiShader;
 Shader GameConstants::textShader;
 

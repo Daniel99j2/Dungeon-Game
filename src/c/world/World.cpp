@@ -37,12 +37,6 @@ static GridCoord toGrid(const glm::vec3 &pos) {
 	};
 }
 
-void World::drawWorld() const {
-	for (auto &object: gameObjects) {
-		object->draw();
-	}
-}
-
 void World::tick(float deltaTime) {
 	Profiler::beginSection("Physics");
 	simulatePhysics(deltaTime);

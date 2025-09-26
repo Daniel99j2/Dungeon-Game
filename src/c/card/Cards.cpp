@@ -157,7 +157,7 @@ std::shared_ptr<Card> Cards::TREAD_LIGHTLY = make_card(Card("Tread Lightly", "Bl
                                                             }, []() {
                                                             }));
 
-std::shared_ptr<Card> Cards::GRAB_AND_RUN = make_card(Card("Grab 'n' Run", "+7 🪙\n+10% speed for 15s",
+std::shared_ptr<Card> Cards::LOOT_AND_SCOOT = make_card(Card("Loot 'n' Scoot", "+7 🪙\n+10% speed for 15s",
                                                            Card::CardType::UNCOMMON, false, false, 3, 15, 20,
                                                            []() {
 	                                                           GameEffectManager::treasureToGenerate += 7;
@@ -420,6 +420,16 @@ std::shared_ptr<Card> Cards::BRILLIANCE = make_card(Card("Brilliance", "Last two
                                                          }, []() {
                                                          }));
 
+std::shared_ptr<Card> Cards::POWER_OF_OBSERVATION = make_card(Card("Powers of observation",
+														   "Each 💥 triggered has 10% chance to illuminate area for 10s",
+														   Card::CardType::LEGENDARY, true, false, 1, 10, -1,
+														   []() {
+															   //TODO: add the light
+														   }, []() {
+														   }, []() {
+														   }));
+
+
 // LEGENDARY
 std::shared_ptr<Card> Cards::THE_DARKEST_DEPTHS = make_card(Card("The Darkest Depths", "Generate +10 💥 and +20 🪜",
                                                                  Card::CardType::LEGENDARY, true, false, 1, -1, -1,
@@ -441,8 +451,8 @@ std::shared_ptr<Card> Cards::AVALANCHE = make_card(Card("Avalanche", "+1 🔥 fo
                                                         }));
 
 std::shared_ptr<Card> Cards::BEAST_MASTER = make_card(Card("Beast Master",
-                                                           "Each ⚠️ triggered has 50% chance to illuminate area for 10s",
-                                                           Card::CardType::LEGENDARY, true, false, 1, -1, -1,
+                                                           "Each ⚠️ triggered has 50% chance to illuminate area for 30s",
+                                                           Card::CardType::LEGENDARY, true, false, 1, 30, -1,
                                                            []() {
 	                                                           //TODO: add the light
                                                            }, []() {
