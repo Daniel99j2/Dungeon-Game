@@ -16,7 +16,12 @@ void main() {
 
     int angle = int(floor(degrees(atan(dir.y, dir.x)))) + 180;
 
-    if(shadow[angle] < length(dir)) FragColor = vec4((FragColor.rgb *= 0.5f), FragColor.a);
+    vec3 outColour = vec3(FragColor);
+    if(shadow[angle] < (length(dir) * 10000) - 50000) outColour *= 0.5f;
+
+    outColour *= 1-length(gl_FragCoord.xy/screenSize-0.5);
+
+    FragColor = vec4(outColour, FragColor.a);
     //else FragColor.g = 1;
 
     //FragColor = vec4(gl_FragCoord.xy / screenSize, 1.0, 1.0);

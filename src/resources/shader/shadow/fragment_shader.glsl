@@ -15,7 +15,7 @@ void main() {
 
         int angle = int(floor(degrees(atan(dir.y, dir.x)))) + 180;
 
-        atomicMin(shadowData.distances[angle], int(length(dir)));
+        atomicMin(shadowData.distances[angle], int((length(dir) * 10000)));
     };
 
     discard;

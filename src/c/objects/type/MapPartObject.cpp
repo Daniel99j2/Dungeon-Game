@@ -21,7 +21,7 @@ void MapPartObject::tick() {
 
 void MapPartObject::draw(int *shadow) const {
     Shader* shader;
-    int layer = 0;
+    float layer = 0;
     switch (this->layer) {
         case BACKGROUND: {
             shader = &GameConstants::backgroundShader;
@@ -29,8 +29,8 @@ void MapPartObject::draw(int *shadow) const {
             break;
         }
         case FOREGROUND: {
-            shader = &GameConstants::backgroundShader;
-            layer = 1;
+            shader = &GameConstants::foregroundShader;
+            layer = 0.1;
             break;
         }
         case MISC_TOP: {
